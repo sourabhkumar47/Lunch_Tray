@@ -33,8 +33,11 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.lunchtray.datasource.DataSource
+import com.example.lunchtray.ui.AccompanimentMenuScreen
+import com.example.lunchtray.ui.CheckoutScreen
 import com.example.lunchtray.ui.EntreeMenuScreen
 import com.example.lunchtray.ui.OrderViewModel
+import com.example.lunchtray.ui.SideDishMenuScreen
 import com.example.lunchtray.ui.StartOrderScreen
 
 // TODO: Screen enum
@@ -80,6 +83,8 @@ fun LunchTrayApp() {
             startDestination = LunchTrayScreen.Start.name,
             modifier = Modifier.padding(innerPadding)
         ) {
+
+            //start -> Entree
             composable(route = LunchTrayScreen.Start.name) {
                 StartOrderScreen(
                     onStartOrderButtonClicked = {
@@ -91,6 +96,7 @@ fun LunchTrayApp() {
                 )
             }
 
+            //Entree -> SideDish
             composable(route = LunchTrayScreen.Entree.name) {
                 EntreeMenuScreen(
                     options = DataSource.entreeMenuItems,
@@ -109,37 +115,54 @@ fun LunchTrayApp() {
                 )
             }
 
-            composable(route = LunchTrayScreen.Start.name) {
-                StartOrderScreen(
-                    onStartOrderButtonClicked = {
-                        navController.navigate(LunchTrayScreen.Entree.name)
+            //SideDish -> Accompaniment
+            composable(route = LunchTrayScreen.SideDish.name) {
+                SideDishMenuScreen(
+                    options = DataSource.sideDishMenuItems,
+                    onCancelButtonClicked = {
+                        cancelOrderAndNavigateToStart(
+                            viewModel,
+                            navController
+                        )
+                    },
+                    onNextButtonClicked = { navController.navigate(LunchTrayScreen.Accompaniment.name) },
+                    onSelectionChanged = { item ->
+                        viewModel.updateSideDish(item)
                     },
                     modifier = Modifier
                         .padding(dimensionResource(R.dimen.padding_medium))
-                        .fillMaxSize()
+                        .verticalScroll(rememberScrollState())
                 )
             }
 
-            composable(route = LunchTrayScreen.Start.name) {
-                StartOrderScreen(
-                    onStartOrderButtonClicked = {
-                        navController.navigate(LunchTrayScreen.Entree.name)
+            //Accompaniment -> Checkout
+            composable(route = LunchTrayScreen.Accompaniment.name) {
+                AccompanimentMenuScreen(
+                    options = DataSource.accompanimentMenuItems,
+                    onCancelButtonClicked = {
+                        cancelOrderAndNavigateToStart(
+                            viewModel,
+                            navController
+                        )
                     },
-                    modifier = Modifier
-                        .padding(dimensionResource(R.dimen.padding_medium))
-                        .fillMaxSize()
+                    onNextButtonClicked = { navController.navigate(LunchTrayScreen.Checkout.name) },
+                    onSelectionChanged = { item ->
+                        viewModel.updateAccompaniment(item)
+                    }
                 )
             }
 
-            composable(route = LunchTrayScreen.Start.name) {
-                StartOrderScreen(
-                    onStartOrderButtonClicked = {
-                        navController.navigate(LunchTrayScreen.Entree.name)
-                    },
-                    modifier = Modifier
-                        .padding(dimensionResource(R.dimen.padding_medium))
-                        .fillMaxSize()
-                )
+            //Checkout -> Start
+            composable(route = LunchTrayScreen.Checkout.name) {
+                CheckoutScreen(
+                    orderUiState = uiState,
+                    onNextButtonClicked = { navController.navigate(LunchTrayScreen.Start.name) },
+                    onCancelButtonClicked = {
+                        cancelOrderAndNavigateToStart(
+                            viewModel,
+                            navController
+                        )
+                    })
             }
         }
     }
