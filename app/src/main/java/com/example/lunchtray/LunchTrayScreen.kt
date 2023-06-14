@@ -15,43 +15,46 @@
  */
 package com.example.lunchtray
 
+import androidx.annotation.StringRes
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.dimensionResource
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.example.lunchtray.datasource.DataSource
+import com.example.lunchtray.ui.EntreeMenuScreen
 import com.example.lunchtray.ui.OrderViewModel
 import com.example.lunchtray.ui.StartOrderScreen
 
 // TODO: Screen enum
-enum class LunchTrayScreen {
-    Start,
-    Entree,
-    SideDish,
-    Accompaniment,
-    Checkout
+enum class LunchTrayScreen(@StringRes val title: Int) {
+    Start(title = R.string.app_name),
+    Entree(title = R.string.choose_entree),
+    SideDish(title = R.string.choose_side_dish),
+    Accompaniment(title = R.string.choose_accompaniment),
+    Checkout(title = R.string.order_checkout)
 }
 
 // TODO: AppBar
 
 @Composable
-fun LunchTrayApp(
-    viewModel: OrderViewModel = viewModel(),
-    navController: NavHostController = rememberNavController()
-) {
+fun LunchTrayApp() {
     // TODO: Create Controller and initialization
 
+    //Create NavController
+    val navController = rememberNavController()
 
     // Get current back stack entry
     val backStackEntry by navController.currentBackStackEntryAsState()
-
 
     // Get the name of the current screen
     val currentScreen = LunchTrayScreen.valueOf(
@@ -59,7 +62,7 @@ fun LunchTrayApp(
     )
 
     // Create ViewModel
-//    val viewModel: OrderViewModel = viewModel()
+    val viewModel: OrderViewModel = viewModel()
 
     Scaffold(
         topBar = {
@@ -79,9 +82,66 @@ fun LunchTrayApp(
                 StartOrderScreen(
                     onStartOrderButtonClicked = {
                         navController.navigate(LunchTrayScreen.Entree.name)
-                    }
+                    },
+                    modifier = Modifier
+                        .padding(dimensionResource(R.dimen.padding_medium))
+                        .fillMaxSize()
+                )
+            }
+
+            composable(route = LunchTrayScreen.Entree.name) {
+                EntreeMenuScreen(
+                    options = DataSource.entreeMenuItems,
+                    onCancelButtonClicked = {
+                        cancelOrderAndNavigateToStart(viewModel, navController)
+                    },
+                    onNextButtonClicked = { navController.navigate(LunchTrayScreen.SideDish.name) },
+                    onSelectionChanged = { viewModel.entreeMenuItems(it) }
+                )
+            }
+
+            composable(route = LunchTrayScreen.Start.name) {
+                StartOrderScreen(
+                    onStartOrderButtonClicked = {
+                        navController.navigate(LunchTrayScreen.Entree.name)
+                    },
+                    modifier = Modifier
+                        .padding(dimensionResource(R.dimen.padding_medium))
+                        .fillMaxSize()
+                )
+            }
+
+            composable(route = LunchTrayScreen.Start.name) {
+                StartOrderScreen(
+                    onStartOrderButtonClicked = {
+                        navController.navigate(LunchTrayScreen.Entree.name)
+                    },
+                    modifier = Modifier
+                        .padding(dimensionResource(R.dimen.padding_medium))
+                        .fillMaxSize()
+                )
+            }
+
+            composable(route = LunchTrayScreen.Start.name) {
+                StartOrderScreen(
+                    onStartOrderButtonClicked = {
+                        navController.navigate(LunchTrayScreen.Entree.name)
+                    },
+                    modifier = Modifier
+                        .padding(dimensionResource(R.dimen.padding_medium))
+                        .fillMaxSize()
                 )
             }
         }
     }
+}
+
+
+//Cancel Button
+fun cancelOrderAndNavigateToStart(
+    viewModel: OrderViewModel,
+    navController: NavHostController
+) {
+    viewModel.resetOrder()
+    navController.popBackStack(LunchTrayScreen.Start.name, inclusive = false)
 }
