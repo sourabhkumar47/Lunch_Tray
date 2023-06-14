@@ -129,7 +129,7 @@ fun LunchTrayApp() {
                         navController.navigate(LunchTrayScreen.Entree.name)
                     },
                     modifier = Modifier
-                        .padding(dimensionResource(R.dimen.padding_medium))
+//                        .padding(dimensionResource(R.dimen.padding_medium))
                         .fillMaxSize()
                 )
             }
