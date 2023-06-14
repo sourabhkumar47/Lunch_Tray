@@ -106,6 +106,10 @@ fun LunchTrayApp() {
     Scaffold(
         topBar = {
             // TODO: AppBar
+            LunchTrayAppBar(
+                currentScreen = currentScreen,
+                canNavigateBack = navController.previousBackStackEntry != null,
+                navigateUp = { navController.navigateUp() })
         }
     ) { innerPadding ->
         val uiState by viewModel.uiState.collectAsState()
