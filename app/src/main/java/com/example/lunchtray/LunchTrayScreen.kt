@@ -148,7 +148,10 @@ fun LunchTrayApp() {
                     onNextButtonClicked = { navController.navigate(LunchTrayScreen.Checkout.name) },
                     onSelectionChanged = { item ->
                         viewModel.updateAccompaniment(item)
-                    }
+                    },
+                    modifier = Modifier
+                        .padding(dimensionResource(R.dimen.padding_medium))
+                        .verticalScroll(rememberScrollState())
                 )
             }
 
@@ -162,7 +165,11 @@ fun LunchTrayApp() {
                             viewModel,
                             navController
                         )
-                    })
+                    },
+                    modifier = Modifier
+                        .padding(dimensionResource(R.dimen.padding_medium))
+                        .verticalScroll(rememberScrollState())
+                )
             }
         }
     }
